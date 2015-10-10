@@ -14,6 +14,15 @@
 
 """ 仕様が確定してないため、まだ書きようがない """
 
-import unittest
+import WeblioSearcher
+import io
+import sys
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+searcher = WeblioSearcher.WeblioSearcher()
+meaning = searcher.getmeaning("interpolate")
+
+print(meaning.main)
 
 # ここまで
