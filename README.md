@@ -7,6 +7,7 @@
 ↓こんな感じに使いたい
 
 例1: コマンドラインから問い合わせ
+
     $python WeblioSearcher.py program
     [名詞]  1.プログラム、番組表
             2.a 計画，予定; 予定表 〔for〕
@@ -18,6 +19,7 @@
 ---------------------------------------------------------------------------
 
 例2: モジュールとして使用
+
     import WeblioSearcher
     meaning = WeblioSearcher.getmeaning('program')
     print(meaning.noun)
