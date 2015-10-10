@@ -24,5 +24,6 @@ searcher = WeblioSearcher.WeblioSearcher()
 meaning = searcher.getmeaning("interpolate")
 
 print(meaning.main)
+print(dir(meaning))
 
 # ここまで

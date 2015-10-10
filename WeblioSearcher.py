@@ -24,33 +24,32 @@ class WeblioSearcher:
 	def __init__(self):
 		""" 初期化 """
 		self.weblioURL = "http://ejje.weblio.jp/content/"
-		self.parser = weblio_parser.WeblioParser()
-
-
-	def getsource(self, word):
-		""" ソースを取得する """
-		url = self.weblioURL + word
-		return urllib.request.urlopen(url).read()
 
 	def getmeaning(self, word):
 		""" Meaningオブジェクトを返す。　"""
 
+		self.parser = weblio_parser.WeblioParser()
+		self.data = None
 		src = requests.get(self.weblioURL + word)
 		self.parser.feed(src.text)
-		return meaning.Meaning(self.parser.getdata())
+		self.data = self.parser.getdata()
+		return meaning.Meaning(self.data)
 
-	def _adjust(self, string):
-		""" パースされたデータを変換しやすい形式に整形する """
-		# ここで何らかの整形処理
-		adjusted = string
-
-		return adjusted
 
 if __name__ == "__main__":
 	
-	## init
-	sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-	searcher = WeblioSearcher()
-	meaning = searcher.getmeaning("interpolate")
+	# うまく表示されないときは下のコメントを外す
+	# sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-	print(meaning.all)
+	# コマンドラインから受け取った値を処理
+	print(sys.argv)
+	print(len(sys.argv))
+	if len(sys.argv) == 1:
+		print(u"何も聞かれてないから、何も答えないよ")
+	else:
+		sys.argv.pop(0)
+		searcher = WeblioSearcher()
+		for word in sys.argv:
+			it_mean = searcher.getmeaning(word)
+			print("[", word, "]")
+			print(it_mean.main, end='\n\n')

@@ -36,6 +36,14 @@ class Meaning:
 		# ウザったらしいから語源以下を消去
 		self.main, temp0, temp1 = self.main.partition('【語源】')
 
+		self.main = self.main.replace("1a","\n1\ta")
+		self.main = self.main.replace("\nb","\n\tb ")
+		self.main = self.main.replace("\nc","\n\tc ")
+		self.main = self.main.replace("\nd","\n\td ")
+
 	def getall(self):
 		""" 結果すべてを返す """
 		return self.all
+
+	def getmain(self):
+		return self.main
