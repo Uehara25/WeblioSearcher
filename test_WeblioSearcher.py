@@ -20,10 +20,9 @@ import sys
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-searcher = WeblioSearcher.WeblioSearcher()
-meaning = searcher.getmeaning("interpolate")
+meaning = WeblioSearcher.getmeaning("interpolate")
 
 print(meaning.main)
-print(dir(meaning))
 
 # ここまで
+## can you see it??
