@@ -32,7 +32,10 @@ class WeblioParser(HTMLParser):
 		# パース状態保持用変数軍
 
 		self._is_conjugate = False
+		# 単語の意味を示すデータを取得できる範囲かの判定
 		self._is_maindata = False
+
+		# 
 
 	def handle_starttag(self, tag, attrs):
 		# 変化形であるか
@@ -71,53 +74,6 @@ class WeblioParser(HTMLParser):
 	def getdata(self):
 		return {"conjugate":self._conjugate, "maindata":self._maindata}
 
-
-class AlphabetPutter:
-	def __init__(self):
-		self._level = 0
-
-	def put(self):
-		self._level += 1
-		return chr(97 + (self._level - 1))
-
-	def init(self):
-		self._level = 0
-
-
-
-
-class Structure:
-	def __init__(self):
-		self.level = 0
-		self.base = []
-		self.first = []
-		self.second = []
-
-	def add(self, word):
-		if self.level == 0:
-			self.base.append(word)
-		elif self.level == 1:
-			self.first.append(word)
-		elif self.level == 2:
-			self.second.append(word)
-		else:
-			print("あり得ないパラメータです")
-
-	def up(self):
-		self.level += 1
-
-	def down(self):
-		if self.level == 0:
-			print("あり得ない操作です")
-		elif self.level == 1:
-			self.base.append(self.first)
-			self.first = []
-		elif self.level == 2:
-			self.first.append(self.second)
-			self.second = []
-		else:
-			print("どうしてこうなった")
-		self.level -= 1
 
 
 
