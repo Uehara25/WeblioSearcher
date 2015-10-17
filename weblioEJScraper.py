@@ -1,7 +1,4 @@
 """
-
-
-
 資料が見当たらないので、いくつかの検索結果をもとに考え、構造は以下のようになっているとした。
 
 [出典辞書] - [品詞] - [他動詞or自動詞] - [A, B, ...] - [1, 2, ...] - [a, b, ...] - [意味]
@@ -24,6 +21,16 @@
 [意味]は意味。
 <p class="lvlB"></p>で特定
 
+
+
+[品詞]            part : part of speech より
+[他動詞or自動詞]   tori : transive or intransive より
+[A, B, ...]      u_alph : upper alphabet より
+[1, 2, ...]      number : そのまま
+[a, b, ...]      alph : alphabet より
+[意味]            mean : meaning より
+
+
 """
 
 from bs4 import BeautifulSoup
@@ -31,6 +38,7 @@ import io
 import sys
 import requests
 import meaning
+import MeaningBuilder
 
 class Meaning:
 
@@ -41,18 +49,11 @@ def _get_source(word):
     src = requests.get("http://ejje.weblio.jp/content/" + word)
     return src.text
 
-class A:
-    def __init__(self, word):
-        self.word = word
-
-    def get_all(self):
-        return self.word
 
 def getmeaning(word):
-    return A(word)
-
-def _getmeaning(word):
     
+    builder = MeaningBuilder.MeaningBuilder()
+
     src = _get_source(word)
     
     soup = BeautifulSoup(src, 'html5lib')
@@ -61,17 +62,6 @@ def _getmeaning(word):
     kiji = soup.find("div", class_='kiji')
     lines = kiji.find_all("div", class_="level0")
 
-    """
-    品詞が来たらここに追加する
-    """
-
-    speech_set = {}
-    base2 = []
-
-    n = []
-    t = []
-    ua = []
-    a = []
 
     for line in lines:
        # 動詞、他動詞など、タイトルを表すような行であるときの処理
@@ -85,54 +75,69 @@ def _getmeaning(word):
                 sub.extract()
            
             if temp != "":
-                speech_set[node.get_text(strip=True)] = [temp]
+                builder.add_part(node.get_text(strip=True))
             else:
-                speech_set[node.get_text(strip=True)] = []
+                builder.add_tori(node.get_text(strip=True))
             continue
 
-       # 大文字見出しが含まれる場合
-        uppar_alphabet = line.find('span', class_="lvlUAH")
-        if uppar_alphabet is not None:
-            ua.append(uppar_alphabet.get_text(strip=True))
-            uppar_alphabet.extract()
+        # 大文字見出しが含まれる場合
+        u_alph = line.find('span', class_="lvlUAH")
+        if u_alph is not None:
+            builder.add_u_alph(u_alph.get_text(strip=True))
+            u_alph.extract()
             continue
 
-       # 1, a などと説明を表す行の処理
-        text = line.find('p', class_="lvlB")
+        # 1, a などと説明を表す行の処理
+        mean = line.find('p', class_="lvlB")
         number = line.find('p', class_="lvlNH")
-        alphabet = line.find('p', class_="lvlAH")
- 
-        if text is not None:
-            t.append(text.get_text(strip=True)) 
-            text.extract()
-        if alphabet is not None:
-            if alphabet.get_text(strip=True) != '':
-                a.append(alphabet.get_text(strip=True))
-                alphabet.extract()
+        alph = line.find('p', class_="lvlAH")
+        
+        # 取得する順番実際の並びの反対となるため、一時的に値を保持して処理する
+        mean_dat = None
+        number_dat = None
+        alph_dat =None
+
+        if mean is not None:
+            mean_dat = mean.get_text(strip=True)
+            mean.extract()
+        if alph is not None:
+            if alph.get_text(strip=True) != '':
+                alph_dat = alph.get_text(strip=True)
+                alph.extract()
         if number is not None:
             if number.get_text(strip=True) != '':
-                n.append(number.get_text(strip=True))
+                number_dat = number.get_text(strip=True)
                 number.extract()
-    return meaning.Meaning(word)
+        
+        if number_dat is not None:
+            builder.add_number(number_dat)
+        if alph_dat is not None:
+            builder.add_alph(alph_dat)
+        if mean_dat is not None:
+            builder.add_mean(mean_dat)
 
-"""
-    print(speech_set)
-    print(ua)
-    print(n)
-    print(a)
-    print(t)
-"""
+        if mean is None and alph is None and number is None:
+            builder.add_mean(line.get_text(strip=True))
+
+    return builder.get_meaning()
 
 
 if __name__ == "__main__":
     # テストコード
-    word_list = ["account","act","addition"]#,"adjustment","advertisement","agreement","air","amount","amusement","animal","answer","apparatus","approval","argument","art","attack","attempt","attention","attraction","authority","back","balance","base","behavior","belief","birth","bit","bite","blood","blow","body","brass","bread","breath","brother","building","burn","burst","business","butter","canvas","care","cause","chalk","chance","change","cloth","coal","color","comfort","committee","company","comparison","competition","condition"]
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    # OGDEN's BASIC ENGLISHより一部拝借
+    # http://ogden.basic-english.org/words.html
+    word_list = ["account","act","addition","adjustment","advertisement","agreement","air","amount","amusement","animal","answer","apparatus","approval","argument","art","attack","attempt","attention","attraction","authority","back","balance","base","behavior","belief","birth","bit","bite","blood","blow","body","brass","bread","breath","brother","building","burn","burst","business","butter","canvas","care","cause","chalk","chance","change","cloth","coal","color","comfort","committee","company","comparison","competition","condition"]
+
+    # うまく表示されないときは以下のコメントを外す
+    #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
     count = 0
-    print("hit")
+    string = ""
     for word in word_list:
-        m = _getmeaning(word)
-        print(m)
-        print("alltext = ", m.get_all())
+        m = getmeaning(word)
         count += 1
-        print(count)
+        string += str(count) + ":" + word + "'s meaning is ..." + m.get_all() + '\n'
+        print(str(count) + ":" + word + "'s meaning is ..." + m.get_all())
+
+    with open("out.txt", "w", encoding='utf-8') as fp:
+        fp.write(string)
