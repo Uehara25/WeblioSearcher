@@ -16,9 +16,9 @@ class Meaning:
 		使いたい形式が確定次第仕様を決定する """
 
 	def __init__(self):
-		self.meaning = "meaning_str"
+		self.string = ""
 		# ...
 
 	def get_all(self):
 		""" 結果すべてを返す """
-		return self.meaning #self.meaning_str
+		return self.string #self.meaning_str

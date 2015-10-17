@@ -49,6 +49,7 @@ def _get_source(word):
     src = requests.get("http://ejje.weblio.jp/content/" + word)
     return src.text
 
+
 def getmeaning(word):
     
     builder = MeaningBuilder.MeaningBuilder()
@@ -115,17 +116,28 @@ def getmeaning(word):
         if mean_dat is not None:
             builder.add_mean(mean_dat)
 
+        if mean is None and alph is None and number is None:
+            builder.add_mean(line.get_text(strip=True))
+
     return builder.get_meaning()
 
 
 if __name__ == "__main__":
     # テストコード
-    word_list = ["account","act","addition"]#,"adjustment","advertisement","agreement","air","amount","amusement","animal","answer","apparatus","approval","argument","art","attack","attempt","attention","attraction","authority","back","balance","base","behavior","belief","birth","bit","bite","blood","blow","body","brass","bread","breath","brother","building","burn","burst","business","butter","canvas","care","cause","chalk","chance","change","cloth","coal","color","comfort","committee","company","comparison","competition","condition"]
+    # OGDEN's BASIC ENGLISHより一部拝借
+    # http://ogden.basic-english.org/words.html
+    word_list = ["account","act","addition","adjustment","advertisement","agreement","air","amount","amusement","animal","answer","apparatus","approval","argument","art","attack","attempt","attention","attraction","authority","back","balance","base","behavior","belief","birth","bit","bite","blood","blow","body","brass","bread","breath","brother","building","burn","burst","business","butter","canvas","care","cause","chalk","chance","change","cloth","coal","color","comfort","committee","company","comparison","competition","condition"]
 
     # うまく表示されないときは以下のコメントを外す
     #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
     count = 0
+    string = ""
     for word in word_list:
         m = getmeaning(word)
         count += 1
-        print(count, ":", word, "'s meaning is ...", m.get_all())
+        string += str(count) + ":" + word + "'s meaning is ..." + m.get_all() + '\n'
+        print(str(count) + ":" + word + "'s meaning is ..." + m.get_all())
+
+    with open("out.txt", "w", encoding='utf-8') as fp:
+        fp.write(string)
