@@ -27,12 +27,15 @@ class WeblioParser(HTMLParser):
 		self._conjugate = []
 
 		# 意味本体
-		self._maindata = ""
+		self._maindata = []
 
 		# パース状態保持用変数軍
 
 		self._is_conjugate = False
+		# 単語の意味を示すデータを取得できる範囲かの判定
 		self._is_maindata = False
+
+		# 
 
 	def handle_starttag(self, tag, attrs):
 		# 変化形であるか
@@ -65,7 +68,7 @@ class WeblioParser(HTMLParser):
 
 		# 意味データなら追加
 		if self._is_maindata:
-			self._maindata += data
+			self._maindata.append(data)
 
 
 	def getdata(self):
@@ -74,3 +77,101 @@ class WeblioParser(HTMLParser):
 
 
 
+
+#### test
+
+if __name__ == "__main__":
+	import requests
+	import sys
+	import io
+
+	sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+	parser = WeblioParser()
+	src = requests.get("http://ejje.weblio.jp/content/interpolate")
+	parser.feed(src.text)
+	data = parser.getdata()
+	data = data["maindata"]
+
+	"""
+	# structure test
+	## first
+	structure = Structure()
+	for x in range(3):
+		structure.add("foo")
+
+	print(structure.base)
+	## second
+	structure = Structure()
+	for x in range(3):
+		structure.add("base")
+		structure.up()
+		for y in range(2):
+			structure.add("first")
+			structure.up()
+			for z in range(4):
+				structure.add("third")
+			structure.down()
+		structure.down()
+
+	print(structure.base)
+	"""
+
+	# 文字列への変換といこうか・・・
+
+#	print(data)
+	l = Structure()
+	for d in data:
+		if '】' in d:
+			if l.level == 0:
+				pass
+			elif l.level == 1:
+				l.down()
+			elif l.level == 2:
+				l.down()
+				l.down()
+			else:
+				print("] is fukumareteru kedo okasii")
+
+		elif d.isdecimal():
+
+			if l.level == 0:
+				l.up()
+			elif l.level == 1:
+				pass
+			elif l.level == 2:
+				l.down()
+			else:
+				pass
+
+		elif d.isalpha() and len(d) == 1 and l.level == 1:
+
+			if l.level == 0:
+				print("1 mozi dakedo atteru")
+			elif l.level == 1:
+				l.up()
+			elif l.level == 2:
+				l.down()
+				l.up()
+			else:
+				print("incorrect")
+		else:
+			pass
+		l.add(d)
+
+	putter = AlphabetPutter()
+	base = ""
+	for x in l.base:
+		if type(x) is str:
+			base += x
+		else:
+			first = "\n"
+			for y in x:
+				if type(y) is str:
+					first += y
+				else:
+					second = "\n"
+					for z in y:
+						second += z
+					first += second
+			base += first
+	print(base)
