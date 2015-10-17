@@ -15,35 +15,10 @@ class Meaning:
 
 		使いたい形式が確定次第仕様を決定する """
 
-	def __init__(self, data_dict):
-		self._conjugate = []
-		self._verb = []
-		self.all = []
-		self.main = ""
+	def __init__(self):
+		self.meaning = meaning_str
 		# ...
 
-		self.construct(data_dict)
-
-	def construct(self, data_dict):
-		""" string の値を見やすい形に変形し、以下の変数に保存していく
-
-			self._noun,self._verb,...にリストの形で格納する
-			細かい仕様はまだ決まってない """
-		self._conjugate = data_dict["conjugate"]
-		self.all = ''.join(data_dict["conjugate"]) + data_dict["maindata"]
-		self.main = data_dict["maindata"].replace('.','.\n')
-
-		# ウザったらしいから語源以下を消去
-		self.main, temp0, temp1 = self.main.partition('【語源】')
-
-		self.main = self.main.replace("1a","\n1\ta")
-		self.main = self.main.replace("\nb","\n\tb ")
-		self.main = self.main.replace("\nc","\n\tc ")
-		self.main = self.main.replace("\nd","\n\td ")
-
-	def getall(self):
+	def get_all(self):
 		""" 結果すべてを返す """
-		return self.all
-
-	def getmain(self):
-		return self.main
+		return self.meaning_str #self.meaning_str

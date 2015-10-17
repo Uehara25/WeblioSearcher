@@ -30,6 +30,7 @@ from bs4 import BeautifulSoup
 import io
 import sys
 import requests
+import meaning
 
 class Meaning:
 
@@ -40,12 +41,20 @@ def _get_source(word):
     src = requests.get("http://ejje.weblio.jp/content/" + word)
     return src.text
 
-def getmeaning(word):
+class A:
+    def __init__(self, word):
+        self.word = word
 
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    def get_all(self):
+        return self.word
+
+def getmeaning(word):
+    return A(word)
+
+def _getmeaning(word):
     
     src = _get_source(word)
-
+    
     soup = BeautifulSoup(src, 'html5lib')
 
     # 最初に来た辞書に含まれるデータを含む行のリストを抽出する
@@ -65,7 +74,7 @@ def getmeaning(word):
     a = []
 
     for line in lines:
-        # 動詞、他動詞など、タイトルを表すような行であるときの処理
+       # 動詞、他動詞など、タイトルを表すような行であるときの処理
         node = line.find('div', class_="KnenjSub")
 
         if node is not None:
@@ -74,25 +83,25 @@ def getmeaning(word):
             if sub is not None:
                 temp = sub.get_text(strip=True)
                 sub.extract()
-            
+           
             if temp != "":
                 speech_set[node.get_text(strip=True)] = [temp]
             else:
                 speech_set[node.get_text(strip=True)] = []
             continue
 
-        # 大文字見出しが含まれる場合
+       # 大文字見出しが含まれる場合
         uppar_alphabet = line.find('span', class_="lvlUAH")
         if uppar_alphabet is not None:
             ua.append(uppar_alphabet.get_text(strip=True))
             uppar_alphabet.extract()
             continue
 
-        # 1, a などと説明を表す行の処理
+       # 1, a などと説明を表す行の処理
         text = line.find('p', class_="lvlB")
         number = line.find('p', class_="lvlNH")
         alphabet = line.find('p', class_="lvlAH")
-  
+ 
         if text is not None:
             t.append(text.get_text(strip=True)) 
             text.extract()
@@ -104,19 +113,26 @@ def getmeaning(word):
             if number.get_text(strip=True) != '':
                 n.append(number.get_text(strip=True))
                 number.extract()
+    return meaning.Meaning(word)
 
-
+"""
     print(speech_set)
     print(ua)
     print(n)
     print(a)
     print(t)
+"""
 
 
 if __name__ == "__main__":
     # テストコード
-    word = getmeaning("play")
-    print("alltext = ", word.all_text())
-    print("noun = ", word.get_noun())
-    print("verb = ", word.get_verb())
-    print("")
+    word_list = ["account","act","addition"]#,"adjustment","advertisement","agreement","air","amount","amusement","animal","answer","apparatus","approval","argument","art","attack","attempt","attention","attraction","authority","back","balance","base","behavior","belief","birth","bit","bite","blood","blow","body","brass","bread","breath","brother","building","burn","burst","business","butter","canvas","care","cause","chalk","chance","change","cloth","coal","color","comfort","committee","company","comparison","competition","condition"]
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    count = 0
+    print("hit")
+    for word in word_list:
+        m = _getmeaning(word)
+        print(m)
+        print("alltext = ", m.get_all())
+        count += 1
+        print(count)
