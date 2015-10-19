@@ -1,18 +1,8 @@
+# -*- coding: utf-8 -*-
 import meaning
 from enum import Enum 
-"""
-
-
-[品詞]            part : part of speech より
-[他動詞or自動詞]   tori : transive or intransive より
-[A, B, ...]      u_alph : upper alphabet より
-[1, 2, ...]      number : そのまま
-[a, b, ...]      alph : alphabet より
-[意味]            mean : meaning より
-"""
 
 class Level(Enum):
-    """ 直前までの位置を記憶 """
     part = 0
     tori = 1
     u_alph = 2
@@ -73,6 +63,3 @@ class MeaningBuilder:
 
     def get_meaning(self):
         return self.meaning
-
-if __name__ == "__main__":
-    import weblioEJScraper

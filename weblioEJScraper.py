@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 資料が見当たらないので、いくつかの検索結果をもとに考え、構造は以下のようになっているとした。
 
@@ -22,6 +23,7 @@
 <p class="lvlB"></p>で特定
 
 
+・項目と変数の対応
 
 [品詞]            part : part of speech より
 [他動詞or自動詞]   tori : transive or intransive より
@@ -39,11 +41,6 @@ import sys
 import requests
 import meaning
 import MeaningBuilder
-
-class Meaning:
-
-    def __init__(self):
-        pass
 
 def _get_source(word):
     src = requests.get("http://ejje.weblio.jp/content/" + word)
@@ -126,9 +123,9 @@ if __name__ == "__main__":
     # テストコード
     # OGDEN's BASIC ENGLISHより一部拝借
     # http://ogden.basic-english.org/words.html
-    word_list = ["account","act","addition","adjustment","advertisement","agreement","air","amount","amusement","animal","answer","apparatus","approval","argument","art","attack","attempt","attention","attraction","authority","back","balance","base","behavior","belief","birth","bit","bite","blood","blow","body","brass","bread","breath","brother","building","burn","burst","business","butter","canvas","care","cause","chalk","chance","change","cloth","coal","color","comfort","committee","company","comparison","competition","condition"]
+    word_list = ["account","act","addition","adjustment","advertisement","agreement","air","amount","amusement","animal","answer","apparatus","approval","argument","art","attack","attempt","attention","attraction","authority","back","balance","base","behavior","belief","birth","bit","bite","blood","blow","body","brass","bread","breath","brother","building","burn","burst"]
 
-    # うまく表示されないときは以下のコメントを外す
+    # うまく表示されないときは以下のコメントを外すとうまくいくかも
     #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
     count = 0
