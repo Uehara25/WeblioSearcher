@@ -6,10 +6,10 @@
  * python ver3.5
  * requests (pip install requests)
  * BeautifulSoup4 (pip install beautifulsoup4)
- * html5lib
+ * html5lib (pip install html5lib)
 
 ##使用方法
-以下のように用います。
+以下の例のように用います。
 今のところMeaningオブジェクトの持つメソッドはget_all()のみ
 取得した全てのデータを文字列で返します。
 
