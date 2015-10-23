@@ -119,10 +119,7 @@ def get_meaning(word):
 
 if __name__ == "__main__":
     import sys
-    # テストコード
-    # OGDEN's BASIC ENGLISHより一部拝借
-    # http://ogden.basic-english.org/words.html
-
+    
     # うまく表示されないときは以下のコメントを外すとうまくいくかも
     #import io
     #sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
